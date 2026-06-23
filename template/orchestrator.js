@@ -6,7 +6,8 @@
  *
  * WORKFLOW:
  *   Researcher -> [Review] -> PM -> [Review] -> Designer -> [Review] ->
- *   Content Writer -> [Review] -> Architect -> FE Engineer + BE Engineer -> QA
+ *   Content Writer -> [Review] -> Architect -> Art Director -> [Review] ->
+ *   FE Engineer + BE Engineer -> QA
  *
  * USAGE:
  *   node orchestrator.js --status              # Show current state
@@ -89,13 +90,23 @@ const STAGES = {
     is_code: true,
     description: 'Technical architecture and file structure',
   },
+  art_director: {
+    id: 'art_director',
+    name: 'Art Director',
+    prompt_file: 'agents/prompts/09_art_director.md',
+    output_file: 'Generated documents/09_art_director/image_assets',
+    output_name: 'Image Assets',
+    depends_on: ['designer', 'content_writer', 'architect'],
+    is_code: true,
+    description: 'Image and graphic asset generation',
+  },
   fe_engineer: {
     id: 'fe_engineer',
     name: 'FE Engineer',
     prompt_file: 'agents/prompts/05_fe_engineer.md',
     output_file: 'Generated documents/05_frontend/component_library',
     output_name: 'Frontend Components',
-    depends_on: ['designer', 'architect', 'content_writer'],
+    depends_on: ['designer', 'architect', 'content_writer', 'art_director'],
     is_code: true,
     description: 'Frontend implementation',
   },
@@ -150,9 +161,16 @@ const REVIEW_STAGES = {
     html_file: 'Generated documents/08_content/copy.html',
     md_file: 'Generated documents/08_content/copy.md',
   },
+  imagery: {
+    id: 'review_imagery',
+    name: 'Review Imagery',
+    depends_on: ['art_director'],
+    html_file: 'Generated documents/09_art_director/image_assets.html',
+    md_file: 'Generated documents/09_art_director/image_assets.md',
+  },
 };
 
-const WORKFLOW_ORDER = ['researcher', 'pm', 'designer', 'content_writer', 'architect', 'fe_engineer', 'be_engineer', 'qa'];
+const WORKFLOW_ORDER = ['researcher', 'pm', 'designer', 'content_writer', 'architect', 'art_director', 'fe_engineer', 'be_engineer', 'qa'];
 
 const FOLDERS = [
   '00_requirements',
@@ -164,6 +182,7 @@ const FOLDERS = [
   'Generated documents/05_frontend',
   'Generated documents/06_backend',
   'Generated documents/07_qa',
+  'Generated documents/09_art_director',
   'agents/prompts',
 ];
 
@@ -221,6 +240,11 @@ function convertMarkdownToHtml(md) {
       const row = cells.map(c => `<${tag} class="border border-slate-700 px-4 py-2 text-slate-300">${c}</${tag}>`).join('');
       parts.push(`<tr>${row}</tr>`);
     } else {
+      const imgMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+      if (imgMatch) {
+        parts.push(`<img src="${imgMatch[2]}" alt="${imgMatch[1]}" class="rounded-lg my-4 max-w-full">`);
+        continue;
+      }
       let text = formatInlineCode(line);
       text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
       parts.push(`<p class="text-slate-300 mb-4">${text}</p>`);
@@ -327,6 +351,14 @@ const NAV_LINKS = {
     ['Design', '../04_design/design_system.html', false],
     ['Content', '../08_content/copy.html', false],
     ['Architecture', 'system_design.html', true],
+  ],
+  '09_art_director': [
+    ['Research', '../01_research/market_analysis.html', false],
+    ['PRD', '../02_prd/product_requirements.html', false],
+    ['Design', '../04_design/design_system.html', false],
+    ['Content', '../08_content/copy.html', false],
+    ['Architecture', '../03_architecture/system_design.html', false],
+    ['Imagery', 'image_assets.html', true],
   ],
 };
 
@@ -474,6 +506,7 @@ class Orchestrator {
       ['Generated documents/08_content/copy.md', 'Generated documents/08_content/copy.html', 'Website Copy', '08_content'],
       ['Generated documents/03_architecture/system_design.md', 'Generated documents/03_architecture/system_design.html', 'System Architecture', '03_architecture'],
       ['Generated documents/07_qa/qa_audit.md', 'Generated documents/07_qa/qa_audit.html', 'QA Audit', '07_qa'],
+      ['Generated documents/09_art_director/image_assets.md', 'Generated documents/09_art_director/image_assets.html', 'Image Assets', '09_art_director'],
     ];
 
     for (const [mdPath, htmlPath, title, folder] of map) {
@@ -598,7 +631,7 @@ function main() {
 
     case '--review':
       if (args[1]) orchestrator.reviewStage(args[1]);
-      else console.log('Usage: node orchestrator.js --review <research|prd|design|content>');
+      else console.log('Usage: node orchestrator.js --review <research|prd|design|content|imagery>');
       break;
 
     case '--agent':
@@ -610,7 +643,7 @@ function main() {
         if (ctx.feedback) console.log(`\n${ctx.feedback}`);
         console.log(`\nAgent Prompt:\n${ctx.prompt}`);
       } else {
-        console.log('Usage: node orchestrator.js --agent <researcher|pm|designer|content_writer|architect|fe_engineer|be_engineer|qa>');
+        console.log('Usage: node orchestrator.js --agent <researcher|pm|designer|content_writer|architect|art_director|fe_engineer|be_engineer|qa>');
       }
       break;
 
@@ -628,7 +661,7 @@ function main() {
       console.log('  node orchestrator.js --status');
       console.log('  node orchestrator.js --reset');
       console.log('  node orchestrator.js --generate-htmls');
-      console.log('  node orchestrator.js --review <research|prd|design|content>');
+      console.log('  node orchestrator.js --review <research|prd|design|content|imagery>');
       console.log('  node orchestrator.js --agent <agent_id>');
       console.log('  node orchestrator.js --complete <agent_id>');
   }

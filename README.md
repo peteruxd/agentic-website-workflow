@@ -4,7 +4,8 @@ A **multi-agent DAG workflow** for designing and building websites, powered by a
 
 ```
 Researcher → [Review] → PM → [Review] → Designer → [Review] →
-Content Writer → [Review] → Architect → FE Engineer + BE Engineer → QA
+Content Writer → [Review] → Architect → Art Director → [Review] →
+FE Engineer + BE Engineer → QA
 ```
 
 Each agent receives the upstream outputs as context and follows a structured prompt to produce a deliverable. You review and approve at each checkpoint before the next agent runs.
@@ -69,11 +70,11 @@ Repeat for each agent. The `--agent` command prints three sections:
 
 ### Agent IDs
 
-`researcher`, `pm`, `designer`, `content_writer`, `architect`, `fe_engineer`, `be_engineer`, `qa`
+`researcher`, `pm`, `designer`, `content_writer`, `architect`, `art_director`, `fe_engineer`, `be_engineer`, `qa`
 
 ### Review Stages
 
-`research`, `prd`, `design`, `content`
+`research`, `prd`, `design`, `content`, `imagery`
 
 During review:
 - `approve` — Approve and continue
@@ -89,7 +90,8 @@ During review:
 | **Designer** | Requirements, Research, Architecture | Design system (3 options → selection) |
 | **Content Writer** | Requirements, Design, Research | SEO-optimized website copy |
 | **Architect** | Requirements, PRD | Tech stack, file structure, API design |
-| **FE Engineer** | Architecture, Design, Content | Frontend components and pages |
+| **Art Director** | Design, Content, Architecture | Image assets catalog + `public/images/*` |
+| **FE Engineer** | Architecture, Design, Content, Imagery | Frontend components and pages |
 | **BE Engineer** | Architecture, PRD | API routes, validation, error handling |
 | **QA** | Requirements, Design, FE, BE | Functionality + usability audit |
 
@@ -107,7 +109,8 @@ my-project/
 │   ├── 05_frontend/            # Frontend code
 │   ├── 06_backend/             # Backend code
 │   ├── 07_qa/                  # QA audit
-│   └── 08_content/             # Website copy
+│   ├── 08_content/             # Website copy
+│   └── 09_art_director/        # Image assets catalog
 ├── agents/prompts/             # Agent instructions (customize per project)
 ├── orchestrator.js             # Workflow runner
 ├── workflow_state.json         # Tracks progress
@@ -137,6 +140,16 @@ The orchestrator is a **directed acyclic graph (DAG)** workflow manager:
 ## Requirements
 
 - **Node.js 18+** (no other dependencies needed — the markdown-to-HTML converter is built in)
+
+## Adding Agents
+
+The workflow is designed to be extensible. To add a new agent:
+1. Create a prompt file in `agents/prompts/` (e.g., `99_my_agent.md`)
+2. Add the agent to the `STAGES` definition in `orchestrator.js`
+3. Add it to `WORKFLOW_ORDER` in the desired position
+4. Add an output directory to `Generated documents/`
+5. Add a review stage in `REVIEW_STAGES` (optional)
+6. Run `node orchestrator.js --reset` to regenerate folders
 
 ## License
 

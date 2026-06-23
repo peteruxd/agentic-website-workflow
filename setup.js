@@ -49,11 +49,11 @@ function copyTemplate(templateDir, outputDir, replacements) {
 }
 
 function createGeneratedDirs(baseDir) {
-  const dirs = ['01_research', '02_prd', '03_architecture', '04_design', '05_frontend', '06_backend', '07_qa', '08_content'];
+  const dirs = ['01_research', '02_prd', '03_architecture', '04_design', '05_frontend', '06_backend', '07_qa', '08_content', '09_art_director'];
   for (const dir of dirs) {
     fs.mkdirSync(path.join(baseDir, 'Generated documents', dir), { recursive: true });
   }
-  console.log('  Created: Generated documents/ (01-08)');
+  console.log('  Created: Generated documents/ (01-09)');
 }
 
 function writeStateFile(outputDir) {
@@ -89,6 +89,7 @@ Multi-agent DAG workflow for designing and building websites.
 | designer | Design system (3-option evaluation) |
 | content_writer | SEO-optimized website copy |
 | architect | Technical architecture |
+| art_director | Image and graphic asset generation |
 | fe_engineer | Frontend implementation |
 | be_engineer | Backend API implementation |
 | qa | Functionality and usability validation |
@@ -96,7 +97,8 @@ Multi-agent DAG workflow for designing and building websites.
 ## Workflow
 \`\`\`
 Researcher -> [Review] -> PM -> [Review] -> Designer -> [Review] ->
-Content Writer -> [Review] -> Architect -> FE Engineer + BE Engineer -> QA
+Content Writer -> [Review] -> Architect -> Art Director -> [Review] ->
+FE Engineer + BE Engineer -> QA
 \`\`\`
 
 ## Review Stages
@@ -104,6 +106,7 @@ Content Writer -> [Review] -> Architect -> FE Engineer + BE Engineer -> QA
 - \`prd\` — Review product requirements
 - \`design\` — Review design system
 - \`content\` — Review website copy
+- \`imagery\` — Review image assets
 
 Commands during review: \`approve\`, \`feedback <text>\`, \`quit\`
 `, 'utf-8');
