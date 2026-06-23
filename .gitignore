@@ -1,0 +1,5 @@
+node_modules/
+Generated documents/
+*.html
+workflow_state.json
+.DS_Store
