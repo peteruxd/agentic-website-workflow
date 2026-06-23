@@ -39,7 +39,7 @@ For each asset you create:
 
 - **File**: `public/images/<filename>`
 - **Format**: Why this format was chosen (SVG for scalability, WebP for photos, etc.)
-- **Source**: How it was created — AI image generation prompt, hand-coded SVG, Pencil G() operation, etc.
+- **Source**: How it was created — AI image generation prompt, hand-coded SVG, Pencil G() operation, Pexels free stock photo (include URL), etc.
 - **Usage**: Exact page/section/component where it appears
 - **Variants**: Dark mode versions if applicable (`*-dark.ext`)
 - **Alt Text**: Descriptive alt text for accessibility
@@ -81,6 +81,13 @@ All assets go in `public/images/`:
 - Backgrounds/patterns: `bg-<descriptor>.svg`
 - Dark mode variants: `<base>-dark.<ext>`
 
+## Image Sources (in order of preference)
+
+1. **Pexels (https://www.pexels.com/)** — Free stock photos for hero images, section backgrounds, product context shots, and lifestyle imagery. Search with simple keywords. Always cite the Pexels URL in the asset catalog.
+2. **SVG / hand-coded graphics** — Best for icons, illustrations, logos, diagrams, and decorative patterns. Write clean, responsive SVGs that use the design system colors.
+3. **AI-generated images** — Use for specific illustrations or concepts that can't be found on Pexels. Provide the prompt used.
+4. **Pencil G() operation** — For AI-generated or stock images within the design tool.
+
 ## Quality Standards
 - Every image must follow the design system's color palette and visual language
 - Use SVGs for icons, logos, and illustrations wherever possible (crisp at any size)
@@ -89,3 +96,4 @@ All assets go in `public/images/`:
 - Use the project's accent color consistently in generated graphics
 - Always produce dark mode variants when the design system specifies dark mode
 - Name files descriptively using kebab-case — no generic names like `image1.jpg`
+- For Pexels images: download the largest available size, then optimize for web
