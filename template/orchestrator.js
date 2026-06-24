@@ -12,6 +12,7 @@
  * USAGE:
  *   node orchestrator.js --status              # Show current state
  *   node orchestrator.js --reset               # Reset workflow
+ *   node orchestrator.js --init-folders        # Create Frontend/Backend project folders
  *   node orchestrator.js --agent <id>          # Get agent context
  *   node orchestrator.js --complete <id>        # Mark agent complete
  *   node orchestrator.js --generate-htmls      # Generate HTML docs
@@ -184,6 +185,8 @@ const FOLDERS = [
   'Generated documents/07_qa',
   'Generated documents/09_art_director',
   'agents/prompts',
+  'Frontend',
+  'Backend',
 ];
 
 // —————————————————————————————————————
@@ -602,6 +605,20 @@ class Orchestrator {
 
     prompt();
   }
+
+  initFolders() {
+    const dirs = ['Frontend', 'Backend'];
+    for (const dir of dirs) {
+      const readmePath = path.join(BASE_DIR, dir, 'README.md');
+      if (!fs.existsSync(readmePath)) {
+        fs.mkdirSync(path.join(BASE_DIR, dir), { recursive: true });
+        fs.writeFileSync(readmePath, `# ${dir}\n\nPlace your ${dir.toLowerCase()} project code here.\n`, 'utf-8');
+        console.log(`[OK] Created ${dir}/README.md`);
+      } else {
+        console.log(`[SKIP] ${dir}/README.md already exists`);
+      }
+    }
+  }
 }
 
 // —————————————————————————————————————
@@ -634,6 +651,10 @@ function main() {
       else console.log('Usage: node orchestrator.js --review <research|prd|design|content|imagery>');
       break;
 
+    case '--init-folders':
+      orchestrator.initFolders();
+      break;
+
     case '--agent':
       if (args[1]) {
         const ctx = orchestrator.getAgentContext(args[1]);
@@ -660,6 +681,7 @@ function main() {
       console.log('Usage:');
       console.log('  node orchestrator.js --status');
       console.log('  node orchestrator.js --reset');
+      console.log('  node orchestrator.js --init-folders');
       console.log('  node orchestrator.js --generate-htmls');
       console.log('  node orchestrator.js --review <research|prd|design|content|imagery>');
       console.log('  node orchestrator.js --agent <agent_id>');

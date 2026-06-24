@@ -56,6 +56,17 @@ function createGeneratedDirs(baseDir) {
   console.log('  Created: Generated documents/ (01-09)');
 }
 
+function createProjectDirs(baseDir) {
+  const dirs = ['Frontend', 'Backend'];
+  for (const dir of dirs) {
+    const dirPath = path.join(baseDir, dir);
+    fs.mkdirSync(dirPath, { recursive: true });
+    const readmePath = path.join(dirPath, 'README.md');
+    fs.writeFileSync(readmePath, `# ${dir}\n\nPlace your ${dir.toLowerCase()} project code here.\n`, 'utf-8');
+    console.log(`  Created: ${dir}/README.md`);
+  }
+}
+
 function writeStateFile(outputDir) {
   const state = {
     current_stage: null, completed_stages: [], qa_attempts: 0,
@@ -76,6 +87,7 @@ Multi-agent DAG workflow for designing and building websites.
 |---------|-------------|
 | \`node orchestrator.js --status\` | Show workflow state |
 | \`node orchestrator.js --reset\` | Reset workflow |
+| \`node orchestrator.js --init-folders\` | Create Frontend/Backend project folders |
 | \`node orchestrator.js --agent <id>\` | Get agent context |
 | \`node orchestrator.js --complete <id>\` | Mark agent complete |
 | \`node orchestrator.js --generate-htmls\` | Generate HTML docs |
@@ -140,6 +152,7 @@ function main() {
 
   copyTemplate(templateDir, outputDir, replacements);
   createGeneratedDirs(outputDir);
+  createProjectDirs(outputDir);
   writeStateFile(outputDir);
   writeAgentsMd(outputDir, opts.name);
 
@@ -147,6 +160,7 @@ function main() {
   console.log('\nNext steps:');
   console.log(`  cd ${path.relative(process.cwd(), outputDir)}`);
   console.log('  Edit 00_requirements/requirements.md');
+  console.log('  node orchestrator.js --init-folders');
   console.log('  node orchestrator.js --agent researcher');
   console.log('  (Save output → --complete → --generate-htmls → --review)');
 }
