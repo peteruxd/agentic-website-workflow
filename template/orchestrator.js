@@ -5,8 +5,9 @@
  * DAG-based workflow manager with review checkpoints and user feedback.
  *
  * WORKFLOW:
- *   Researcher -> [Review] -> PM -> [Review] -> Designer -> [Review] ->
- *   Content Writer -> [Review] -> Architect -> Art Director -> [Review] ->
+ *   Researcher -> [Review] -> PM -> [Review] ->
+ *   Content Writer -> Designer (Pass 1) -> [Review design] ->
+ *   Designer Visual (Pass 2) -> Architect -> Art Director -> [Review imagery] ->
  *   FE Engineer + BE Engineer -> QA
  *
  * USAGE:
@@ -77,9 +78,19 @@ const STAGES = {
     prompt_file: 'agents/prompts/08_content_writer.md',
     output_file: 'Generated documents/08_content/copy',
     output_name: 'Website Copy',
-    depends_on: ['designer'],
+    depends_on: ['pm'],
     is_code: false,
     description: 'SEO-optimized content writing',
+  },
+  designer_visual: {
+    id: 'designer_visual',
+    name: 'Designer Visual',
+    prompt_file: 'agents/prompts/04b_designer_visual.md',
+    output_file: 'Generated documents/04_design/design_system',
+    output_name: 'Design System (Visual)',
+    depends_on: ['designer', 'content_writer'],
+    is_code: true,
+    description: 'Visual mockups in .pen format with PNG export',
   },
   architect: {
     id: 'architect',
@@ -171,7 +182,7 @@ const REVIEW_STAGES = {
   },
 };
 
-const WORKFLOW_ORDER = ['researcher', 'pm', 'designer', 'content_writer', 'architect', 'art_director', 'fe_engineer', 'be_engineer', 'qa'];
+const WORKFLOW_ORDER = ['researcher', 'pm', 'content_writer', 'designer', 'designer_visual', 'architect', 'art_director', 'fe_engineer', 'be_engineer', 'qa'];
 
 const FOLDERS = [
   '00_requirements',
@@ -179,6 +190,7 @@ const FOLDERS = [
   'Generated documents/02_prd',
   'Generated documents/03_architecture',
   'Generated documents/04_design',
+  'Generated documents/04_design/mockups',
   'Generated documents/08_content',
   'Generated documents/05_frontend',
   'Generated documents/06_backend',

@@ -8,7 +8,7 @@ Create compelling, SEO-optimized copy for the website based on the design system
 
 ## Input
 - Project requirements from `00_requirements/requirements.md`
-- Design system from `Generated documents/04_design/design_system.md`
+- Product requirements from `Generated documents/02_prd/product_requirements.md`
 - Market research from `Generated documents/01_research/market_analysis.md`
 
 ## Your Task
